@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:replace="~{fragments/header :: header('')}"></head>
+<body>
+
+<!-- Navigation & Logo-->
+<div th:replace="~{fragments/navigation :: navigation('home')}"/></div>
+
+<div class="section blog-posts-wrapper">
+    <div class="container">
+        <h2>Top 10 Users</h2>
+        <div class="row">
+            <div class="col-md-4 col-sm-6">
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="rating : ${ratingList}">
+
+                        <ul class="list-inline">
+                            <li class="list-inline-item"><a th:href="@{/user/{id}(id=${rating.user_id})}"><h2 class="bold">[[${userService.findById(rating.user_id).getUsername()}]]</h2></a></li>
+                            <li class="list-inline-item"><h2 class="bold padding-bottom-7">[[${rating.avarage}]] <small>/ 5</small></h2></li>
+                        </ul>
+
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Javascripts -->
+<div th:replace="~{fragments/footer :: javascript}"></div>
+
+</body>
+</html>

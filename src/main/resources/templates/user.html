@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:replace="~{fragments/header :: header('Users')}"></head>
+<body>
+
+<!-- Navigation & Logo-->
+<div th:replace="~{fragments/navigation :: navigation('users')}"/>
+</div>
+
+<!-- Page Title -->
+<div th:replace="~{fragments/header :: pageTitle('Reviews')}"></div>
+
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="blog-post blog-single-post">
+                <div class="single-post-title">
+                    <h3 th:id="com + ${receiver.id}">[[${receiver.username}]]</h3>
+                </div>
+                <div class="single-post-content">
+                    <div class="row">
+
+                        <div class="col-sm-3">
+                            <div class="rating-block">
+                                <img th:src="@{/img/user_{id}.png(id=${receiver.id%5})}" class="img-rounded">
+                                <h4>Average user rating</h4>
+                                <h2 class="bold padding-bottom-7">[[${reviews_avg}]] <small>/ 5</small></h2>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="post-coments" id="comments">
+                    <h4>Reviews ([[${reviews_num}]])</h4>
+
+
+                    <div class="review-block">
+
+                        <div th:each="review : ${reviews}">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <img th:src="@{/img/user_{id}.png(id=${review.author_id%5})}" class="img-rounded">
+                                    <div class="review-block-name"><a th:href="@{/user/{id}(id=${review.author_id})}">[[${userService.findById({review.author_id}).username}]]</a></div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="review-block-rate">
+                                        <span th:each="i : ${#numbers.sequence(1, {review.rating})}" class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="review-block-description"> [[${review.comment}]]</div>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+
+                    <h4 class="text-center">Leave a Review</h4>
+                    <div class="comment-form-wrapper" sec:authorize="isAuthenticated()">
+                        <div th:if="${receiver.id} == ${userService.findByUsername(currentUser.getUsername()).id}"><p class="text-center">You can't rate yourself.</p></div>
+                        <div th:unless="${receiver.id} == ${userService.findByUsername(currentUser.getUsername()).id}">
+                        <form th:action="@{/review/add}" role="form" method="POST">
+
+                            <div class="form-group">
+                                <label for="review-rating"><i class="glyphicon glyphicon-star"></i> <b>Rating</b></label>
+                                <select name="rating" id="review-rating" required="true">
+                                    <option selected="selected">5</option>
+                                    <option>4</option>
+                                    <option>3</option>
+                                    <option>2</option>
+                                    <option>1</option>
+                                </select>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="review-comment"><i class="glyphicon glyphicon-comment"></i> <b>Comment</b></label>
+                                <textarea class="form-control" rows="5" id="review-comment" name="text" placeholder="Comment" required="true"></textarea>
+                            </div>
+                            <input type="hidden" name="author" th:value="${userService.findByUsername(currentUser.getUsername()).id}">
+                            <input type="hidden" name="receiver" th:value="${receiver.id}">
+                            <div class="form-group">
+                                <button type="submit" class="btn pull-right">Submit</button>
+                                <div class="clearfix"></div>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                    <div class="comment-form-wrapper" sec:authorize="hasRole('ANONYMOUS')">
+                        <p class="text-center"><a href="/login">Log In</a> to leave review.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Javascripts -->
+<div th:replace="~{fragments/footer :: javascript}"></div>
+
+</body>
+</html>
